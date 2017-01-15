@@ -31,7 +31,6 @@ public class Pizza {
     }
 
     public void slice() {
-
         LinkedList<Coordinate> tomatoes = new LinkedList<>();
         LinkedList<Coordinate> shrooms = new LinkedList<>();
 
@@ -51,18 +50,17 @@ public class Pizza {
         int numberOfIngr = minIng;
 
         while (tomatoes.size() > 0 && shrooms.size() > 0 && numberOfIngr > 0) {
-
             current.coords.add(tomatoes.pop());
             current.coords.add(shrooms.pop());
             numberOfIngr--;
-            
-            if(numberOfIngr == 0) {
+
+            if (numberOfIngr == 0) {
                 slices.add(current);
                 current = new Slice();
                 numberOfIngr = minIng;
             }
         }
-        
+
         System.out.println(slices.toString());
     }
 
