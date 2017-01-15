@@ -12,7 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 /**
  * Google hashcode example
  *
- * @author Sklipnoty
+ * @author Sklipnoty, Nvhaver
  */
 public class Pizza {
 
@@ -80,7 +80,6 @@ public class Pizza {
         }
 
         return (numTomatoes >= minIng && numMushrooms >= minIng && slice.size() <= maxCells);
-
     }
 
     @Override
