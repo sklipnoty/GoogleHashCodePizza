@@ -31,7 +31,6 @@ public class Pizza {
     }
 
     public void slice() {
-
         LinkedList<Coordinate> tomatoes = new LinkedList<>();
         LinkedList<Coordinate> shrooms = new LinkedList<>();
 

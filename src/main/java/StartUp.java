@@ -1,8 +1,10 @@
+
 import domain.Pizza;
 import io.PizzaFileReader;
 
 /**
  * Google hashcode example
+ *
  * @author Sklipnoty
  */
 public class StartUp {
@@ -11,11 +13,13 @@ public class StartUp {
 
     public static void main(String args[]) {
         System.out.println("Starting the pizza slicer!");
+           
+         Pizza pizza = PizzaFileReader.readPizzaFile(FILENAME);
+         System.out.println(pizza);
         
-        Pizza pizza = PizzaFileReader.readPizzaFile(FILENAME);
-        System.out.println(pizza);
-        
-        pizza.slice();
- 
+         pizza.slice();
+
+
     }
+
 }
