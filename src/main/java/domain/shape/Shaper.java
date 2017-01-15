@@ -7,36 +7,21 @@ import java.util.List;
 public class Shaper {
 
     private List<Shape> shapeCoords;
-    private int maxSize;
-    private int minSize;
+    private int n;
 
-    public Shaper(int maxSize) {
-        this(maxSize, 1);
-    }
-    
-    public Shaper(int maxSize, int minOfEachIngredient) {
-        this(maxSize, minOfEachIngredient, 2);
-    }
-    
-    public Shaper(int maxSize, int minOfEachIngredient, int amountOfIngredients) {
-        this.maxSize = maxSize;
-        this.minSize = minOfEachIngredient * amountOfIngredients;
+    public Shaper(int n) {
+        this.n = n;
         this.shapeCoords = new ArrayList<>();
         makeShapes();
     }
-    
-
 
     private void makeShapes() {
-        for (int i = 0; i < maxSize; i++) {
-            for (int j = 0; j < Math.floor(maxSize / (i + 1)); j++) {
-                // check if surface is bigger or equal to minimum size
-                if((i+1)*(j+1) >= this.minSize) {
-                    Shape s = new Shape();
-                    s.coords[0] = new Coordinate(0, 0);
-                    s.coords[1] = new Coordinate(i, j);
-                    shapeCoords.add(s);
-                }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < Math.floor(n / (i + 1)); j++) {
+                Shape s = new Shape();
+                s.coords[0] = new Coordinate(0, 0);
+                s.coords[1] = new Coordinate(i + 1, j + 1);
+                shapeCoords.add(s);
             }
         }
     }
