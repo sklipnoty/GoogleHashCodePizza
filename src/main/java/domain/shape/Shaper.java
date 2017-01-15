@@ -16,7 +16,6 @@ public class Shaper {
     }
 
     private void makeShapes() {
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < Math.floor(n / (i + 1)); j++) {
                 Shape s = new Shape();
@@ -30,8 +29,24 @@ public class Shaper {
     public List<Shape> getShapeCoords() {
         return shapeCoords;
     }
-    
-    
+
+    public List<Shape> getValidShapes(int x, int y, int maxX, int maxY) {
+        List<Shape> shapes = new ArrayList<>();
+
+        for (Shape s : shapeCoords) {
+            Shape validShape = new Shape();
+            validShape.coords[0] = new Coordinate(s.coords[0].getX() + x, s.coords[0].getY() + y);
+
+            if (s.coords[1].getY() + y > maxY || s.coords[1].getX() + x > maxX) {
+                continue;
+            }
+
+            validShape.coords[1] = new Coordinate(s.coords[1].getX() + x, s.coords[1].getY() + y);
+            shapes.add(validShape);
+        }
+
+        return shapes;
+    }
 
 }
 
