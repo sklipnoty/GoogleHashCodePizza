@@ -50,20 +50,38 @@ public class Pizza {
 
         int numberOfIngr = minIng;
 
-        while (tomatoes.size() > 0 && shrooms.size() > 0 && numberOfIngr > 0) {
-
+        /*while (tomatoes.size() > 0 && shrooms.size() > 0 && numberOfIngr > 0) {
             current.coords.add(tomatoes.pop());
             current.coords.add(shrooms.pop());
             numberOfIngr--;
-            
-            if(numberOfIngr == 0) {
+
+            if (numberOfIngr == 0) {
                 slices.add(current);
                 current = new Slice();
                 numberOfIngr = minIng;
             }
-        }
-        
+        }*/
+
         System.out.println(slices.toString());
+    }
+
+    public boolean isValidSlice(Slice slice) {
+        int numTomatoes = 0;
+        int numMushrooms = 0;
+
+        // Loop over slice parts
+        for (int i = slice.coords[0].getX(); i < slice.coords[1].getX(); i++) {
+            for (int j = slice.coords[0].getY(); j < slice.coords[1].getY(); j++) {
+                if (pizzaIng[i][j] == PizzaIngredient.M) {
+                    numMushrooms++;
+                } else {
+                    numTomatoes++;
+                }
+            }
+        }
+
+        return (numTomatoes >= minIng && numMushrooms >= minIng && slice.size() <= maxCells);
+
     }
 
     @Override
