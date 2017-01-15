@@ -15,6 +15,7 @@ public class StartUp {
         Pizza pizza = PizzaFileReader.readPizzaFile(FILENAME);
         System.out.println(pizza);
         
+        pizza.slice();
  
     }
 }

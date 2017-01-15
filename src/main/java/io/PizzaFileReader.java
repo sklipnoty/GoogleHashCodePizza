@@ -37,7 +37,7 @@ public class PizzaFileReader {
                 }
             }
             
-            return new Pizza(pizzaIng, col, row, Integer.valueOf(dim[2]), Integer.valueOf(dim[3]));
+            return new Pizza(pizzaIng, col, row, Integer.valueOf(dim[3]), Integer.valueOf(dim[2]));
             
         } catch (IOException ex) {
             Logger.getLogger(PizzaFileReader.class.getName()).log(Level.SEVERE, null, ex);
