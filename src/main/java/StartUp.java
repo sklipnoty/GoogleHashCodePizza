@@ -21,10 +21,7 @@ public class StartUp {
          Pizza pizza = PizzaFileReader.readPizzaFile(FILENAME);
          System.out.println(pizza);
         
-      //   pizza.slice();
-         Shaper s = new Shaper(5);
-         List<Shape> shapes = s.getValidShapes(0, 0, 6, 7);
-         System.out.println(shapes);
+         pizza.slice();
     }
 
 }

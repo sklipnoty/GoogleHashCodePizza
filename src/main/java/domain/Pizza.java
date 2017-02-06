@@ -1,5 +1,7 @@
 package domain;
 
+import domain.shape.Shape;
+import domain.shape.Shaper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -31,37 +33,12 @@ public class Pizza {
     }
 
     public void slice() {
-        LinkedList<Coordinate> tomatoes = new LinkedList<>();
-        LinkedList<Coordinate> shrooms = new LinkedList<>();
-
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                if (pizzaIng[j][i] == PizzaIngredient.M) {
-                    shrooms.add(new Coordinate(j, i));
-                } else {
-                    tomatoes.add(new Coordinate(j, i));
-                }
-            }
-        }
-
-        List<Slice> slices = new ArrayList<>();
-        Slice current = new Slice();
-
-        int numberOfIngr = minIng;
-
-        /*while (tomatoes.size() > 0 && shrooms.size() > 0 && numberOfIngr > 0) {
-            current.coords.add(tomatoes.pop());
-            current.coords.add(shrooms.pop());
-            numberOfIngr--;
-
-            if (numberOfIngr == 0) {
-                slices.add(current);
-                current = new Slice();
-                numberOfIngr = minIng;
-            }
-        }*/
-
-        System.out.println(slices.toString());
+        // First make possibility matrix
+        int[][] possibilities = makePossibilityMatrix();
+        
+        System.out.println(Arrays.deepToString(possibilities));
+        
+        
     }
     
     
@@ -87,5 +64,19 @@ public class Pizza {
     @Override
     public String toString() {
         return "Pizza{" + "cols=" + cols + ", rows=" + rows + ", maxCells=" + maxCells + ", minIng=" + minIng + " \n" + Arrays.deepToString(pizzaIng) + '}';
+    }
+
+    private int[][] makePossibilityMatrix() {
+       int[][] possibilities = new int[cols][rows];
+       Shaper shaper = new Shaper(maxCells);
+        
+        for(int i = 0; i < cols; i++) {
+            for(int j = 0; j < rows; j++) {
+                List<Shape> shapes = shaper.getValidShapes(i, j, cols, rows);
+                possibilities[i][j] = shapes.size();
+            }
+        }
+        
+        return possibilities;
     }
 }
