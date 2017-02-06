@@ -33,7 +33,7 @@ public class PizzaFileReader {
             
             for (int i = 0; i < lines.size(); i++) {
                 for(int j = 0; j < lines.get(i).length(); j++) {
-                    pizzaIng[i][j] = PizzaIngredient.valueOf("" +lines.get(i).charAt(j));
+                    pizzaIng[j][i] = PizzaIngredient.valueOf("" +lines.get(i).charAt(j));
                 }
             }
             
