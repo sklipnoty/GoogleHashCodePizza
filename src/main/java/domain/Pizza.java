@@ -45,8 +45,8 @@ public class Pizza {
         int numMushrooms = 0;
 
         // Loop over slice parts
-        for (int i = slice.coords[0].getX(); i < slice.coords[1].getX(); i++) {
-            for (int j = slice.coords[0].getY(); j < slice.coords[1].getY(); j++) {
+        for (int i = slice.coords[0].getX(); i <= slice.coords[1].getX(); i++) {
+            for (int j = slice.coords[0].getY(); j <= slice.coords[1].getY(); j++) {
                 if (pizzaIng[i][j] == PizzaIngredient.M) {
                     numMushrooms++;
                 } else {
@@ -79,11 +79,13 @@ public class Pizza {
                     sl.coords[1] = shape.coords[1];
 
                     if (isValidSlice(sl)) {
-                        slices.add(sl);
+                        for(int si = sl.coords[0].getX(); si <= sl.coords[1].getX(); si++){
+                            for(int sj = sl.coords[0].getY(); sj <= sl.coords[1].getY(); sj++){
+                                possibilities[si][sj]++;
+                            }
+                        }
                     }
                 }
-                
-                possibilities[i][j] = slices.size();
             }
         }
 
