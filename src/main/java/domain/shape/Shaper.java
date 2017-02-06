@@ -21,10 +21,11 @@ public class Shaper {
         makeShapes();
     }
 
+    /* Using maxcells, we make all the default possible shapes. */
     private void makeShapes() {
         for (int i = 0; i < maxSize; i++) {
             for (int j = 0; j < Math.floor(maxSize / (i + 1)); j++) {
-                // check if area of rectangle shape is greater or equeal to min size
+                // check if area of rectangle shape is greater or equal to min size
                 if((i+1)*(j+1) >= minSize) {
                     Shape s = new Shape();
                     s.coords[0] = new Coordinate(0, 0);
@@ -39,17 +40,19 @@ public class Shaper {
         return shapeCoords;
     }
 
-    public List<Shape> getValidShapes(int x, int y, int maxX, int maxY) {
+    /*For a given x and y, we return all possible from that location with correct coordinates.
+      We use the default shapes made above and transform these coordinates to the given x and y.*/
+    public List<Shape> getPossibleShapes(int x, int y, int maxX, int maxY) {
         List<Shape> shapes = new ArrayList<>();
 
         for (Shape s : shapeCoords) {
-            Shape validShape = new Shape();
-            validShape.coords[0] = new Coordinate(s.coords[0].getX() + x, s.coords[0].getY() + y);
-
-            if (s.coords[1].getY() + y > maxY || s.coords[1].getX() + x > maxX) {
+            
+            if (s.coords[1].getY() + y >= maxY || s.coords[1].getX() + x >= maxX) {
                 continue;
             }
-
+            
+            Shape validShape = new Shape();
+            validShape.coords[0] = new Coordinate(s.coords[0].getX() + x, s.coords[0].getY() + y);
             validShape.coords[1] = new Coordinate(s.coords[1].getX() + x, s.coords[1].getY() + y);
             shapes.add(validShape);
         }

@@ -35,13 +35,10 @@ public class Pizza {
     public void slice() {
         // First make possibility matrix
         int[][] possibilities = makePossibilityMatrix();
-        
+
         System.out.println(Arrays.deepToString(possibilities));
-        
-        
+
     }
-    
-    
 
     public boolean isValidSlice(Slice slice) {
         int numTomatoes = 0;
@@ -67,16 +64,29 @@ public class Pizza {
     }
 
     private int[][] makePossibilityMatrix() {
-       int[][] possibilities = new int[cols][rows];
-       Shaper shaper = new Shaper(maxCells);
-        
-        for(int i = 0; i < cols; i++) {
-            for(int j = 0; j < rows; j++) {
-                List<Shape> shapes = shaper.getValidShapes(i, j, cols, rows);
-                possibilities[i][j] = shapes.size();
+        int[][] possibilities = new int[cols][rows];
+        Shaper shaper = new Shaper(maxCells);
+
+        for (int i = 0; i < cols; i++) {
+
+            for (int j = 0; j < rows; j++) {
+                List<Slice> slices = new ArrayList<>();
+                List<Shape> shapes = shaper.getPossibleShapes(i, j, cols, rows);
+
+                for (Shape shape : shapes) {
+                    Slice sl = new Slice();
+                    sl.coords[0] = shape.coords[0];
+                    sl.coords[1] = shape.coords[1];
+
+                    if (isValidSlice(sl)) {
+                        slices.add(sl);
+                    }
+                }
+                
+                possibilities[i][j] = slices.size();
             }
         }
-        
+
         return possibilities;
     }
 }
