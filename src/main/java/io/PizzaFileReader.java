@@ -29,7 +29,7 @@ public class PizzaFileReader {
             int row = Integer.valueOf(dim[0]);
             int col = Integer.valueOf(dim[1]);
             
-            PizzaIngredient[][] pizzaIng = new PizzaIngredient[row][col];
+            PizzaIngredient[][] pizzaIng = new PizzaIngredient[col][row];
             
             for (int i = 0; i < lines.size(); i++) {
                 for(int j = 0; j < lines.get(i).length(); j++) {
