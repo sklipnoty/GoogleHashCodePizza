@@ -5,8 +5,10 @@ import domain.shape.Shaper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,6 +27,8 @@ public class Pizza {
     private int minIng;
     private ArrayList<Slice> solution;
     private final Shaper shaper;
+    private HashMap<Coordinate, List<Shape>> shapeMap;
+    private ArrayList<Cell> possibleSlices;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;
@@ -32,7 +36,22 @@ public class Pizza {
         this.rows = rows;
         this.maxCells = maxCells;
         this.minIng = minIng;
+
+        //Presetup 
+        System.out.println("Pre-Setup Pizza");
+        //Make a shaper with default shapes.
         this.shaper = new Shaper(maxCells);
+        //Calculate all possible variations
+        shapeMap = new HashMap<>();
+
+        for (int i = 0; i < cols; i++) {
+            System.out.print("\r" + i +"/" + cols  +" \b" );
+            for (int j = 0; j < rows; j++) {
+                shapeMap.put(new Coordinate(i, j), shaper.getPossibleShapes(i, j, cols, rows));
+            }
+        }
+
+        System.out.println("Pre-Setup Done");
     }
 
     public void slice() {
@@ -42,7 +61,6 @@ public class Pizza {
         List<Cell> cells = getPossibleSlices();
 
       //  System.out.println(cells.toString());
-
         while (cells.size() > 0) {
             // Sort the result
             cells.sort(null);
@@ -64,7 +82,6 @@ public class Pizza {
         }
 
     //    System.out.println(solution.toString());
-
         makeOutput(solution);
 
     }
@@ -98,10 +115,11 @@ public class Pizza {
     }
 
     private List<Cell> getPossibleSlices() {
-    //    int[][] possibilities = new int[cols][rows];
+        
+        System.out.println("Possible Slices");
+        
         ArrayList<Cell> possibleSlices = new ArrayList<>();
-        List<Slice> slices;
-     
+
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 Cell cell = new Cell();
@@ -109,12 +127,13 @@ public class Pizza {
                 possibleSlices.add(cell);
             }
         }
+        
+        System.out.println("List of possible slices setup");
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
 
-                slices = new ArrayList<>();
-                List<Shape> shapes = shaper.getPossibleShapes(i, j, cols, rows);
+                List<Shape> shapes = shapeMap.get(new Coordinate(i, j));
 
                 for (Shape shape : shapes) {
                     Slice sl = new Slice();
@@ -129,15 +148,12 @@ public class Pizza {
                                 int index = possibleSlices.indexOf(newCell);
                                 possibleSlices.get(index).getSlices().add(sl);
                                 possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
-                           //     possibilities[si][sj]++;
                             }
                         }
                     }
                 }
             }
         }
-
-    //    System.out.println(Arrays.deepToString(possibilities));
 
         return possibleSlices;
     }
