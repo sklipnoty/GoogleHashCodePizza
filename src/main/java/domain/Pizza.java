@@ -24,6 +24,7 @@ public class Pizza {
     private int maxCells;
     private int minIng;
     private ArrayList<Slice> solution;
+    private final Shaper shaper;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;
@@ -31,6 +32,7 @@ public class Pizza {
         this.rows = rows;
         this.maxCells = maxCells;
         this.minIng = minIng;
+        this.shaper = new Shaper(maxCells);
     }
 
     public void slice() {
@@ -76,6 +78,7 @@ public class Pizza {
         }
 
         // Loop over slice parts
+        // Hier sneller uitgaan namelijk wanneer minIng bereikt is.
         for (int i = slice.coords[0].getX(); i <= slice.coords[1].getX(); i++) {
             for (int j = slice.coords[0].getY(); j <= slice.coords[1].getY(); j++) {
                 if (pizzaIng[i][j] == PizzaIngredient.M) {
@@ -95,11 +98,10 @@ public class Pizza {
     }
 
     private List<Cell> getPossibleSlices() {
-        int[][] possibilities = new int[cols][rows];
+    //    int[][] possibilities = new int[cols][rows];
         ArrayList<Cell> possibleSlices = new ArrayList<>();
         List<Slice> slices;
-        Shaper shaper = new Shaper(maxCells);
-
+     
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 Cell cell = new Cell();
@@ -110,8 +112,6 @@ public class Pizza {
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                
-                System.out.println(i + " " + j);
 
                 slices = new ArrayList<>();
                 List<Shape> shapes = shaper.getPossibleShapes(i, j, cols, rows);
@@ -129,7 +129,7 @@ public class Pizza {
                                 int index = possibleSlices.indexOf(newCell);
                                 possibleSlices.get(index).getSlices().add(sl);
                                 possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
-                                possibilities[si][sj]++;
+                           //     possibilities[si][sj]++;
                             }
                         }
                     }
