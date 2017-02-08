@@ -84,4 +84,9 @@ public class Cell implements Comparable<Cell>{
         possibilities = 0;
         slices = new ArrayList<>();
     }
+
+    public void decrementPossibility() {
+        if(possibilities > 0)
+            possibilities--;
+    }
 }

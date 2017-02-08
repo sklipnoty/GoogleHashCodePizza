@@ -11,13 +11,14 @@ public class Slice implements Comparable<Slice> {
     private Coordinate[] coords = new Coordinate[2];
     private List<Cell> cells = new ArrayList<>();
     private int numberOfMushrooms = 0, numberOfTomatoes = 0;
+    private boolean valid = true;
 
     public Slice(Coordinate coords1, Coordinate coords2, PizzaIngredient[][] pizzaIng, Cell[][] cells) {
         setCoords(coords1, coords2);
 
         for (int i = this.coords[0].getX(); i <= this.coords[1].getX(); i++) {
             for (int j = this.coords[0].getY(); j <= this.coords[1].getY(); j++) {
-                
+
                 this.cells.add(cells[i][j]);
 
                 if (pizzaIng[i][j] == PizzaIngredient.M) {
@@ -52,6 +53,14 @@ public class Slice implements Comparable<Slice> {
 
     public int size() {
         return cells.size();
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     @Override
@@ -94,5 +103,14 @@ public class Slice implements Comparable<Slice> {
     @Override
     public int compareTo(Slice o) {
         return Integer.compare(this.cells.size(), o.cells.size());
+    }
+    
+    public boolean hasValidCells() {
+        for(Cell c : cells) {
+            if(c.getPossibilities() == 0)
+                return false;
+        }
+        
+        return true;
     }
 }
