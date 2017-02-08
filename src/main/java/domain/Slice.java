@@ -102,7 +102,7 @@ public class Slice implements Comparable<Slice> {
 
     @Override
     public int compareTo(Slice o) {
-        return Integer.compare(this.cells.size(), o.cells.size());
+        return Integer.compare(o.cells.size(), this.cells.size());
     }
     
     public boolean hasValidCells() {

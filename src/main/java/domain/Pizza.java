@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,13 +31,11 @@ public class Pizza {
     private ArrayList<Slice> solution;
     private final Shaper shaper;
 
-    private HashMap<Coordinate, List<Shape>> shapeMap;
     private HashMap<Coordinate, List<Slice>> sliceMap = new HashMap<>();
-    private ArrayList<Coordinate> coordinates;
 
     private Cell[][] cells;
     private List<Cell> possibleCells;
-   
+
     private int firstNotZero = 0;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
@@ -50,9 +51,6 @@ public class Pizza {
 
         //Make a shaper with default shapes.
         this.shaper = new Shaper(maxCells);
-        //Calculate all possible variations
-        shapeMap = new HashMap<>();
-        coordinates = new ArrayList<>();
 
         makeMapping();
 
@@ -66,22 +64,16 @@ public class Pizza {
 
                 Cell cell = new Cell();
                 cells[i][j] = cell;
-
-                shapeMap.put(new Coordinate(i, j), shaper.getPossibleShapes(i, j, cols, rows));
             }
         }
-
-        System.out.println("Mapping of coord / possible slices");
-        //Keep a mapping of coordinate , possible slices. (this should replace the above mapping)
-
+        
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
 
-                Coordinate c = new Coordinate(i, j);
-                coordinates.add(c);
+                        Coordinate c = new Coordinate(i, j);
                 cells[i][j].setCoordinate(c);
 
-                List<Shape> shapes = shapeMap.get(c);
+                List<Shape> shapes = shaper.getPossibleShapes(i, j, cols, rows);
                 List<Slice> slices = new ArrayList<>();
 
                 for (Shape shape : shapes) {
@@ -95,6 +87,8 @@ public class Pizza {
                 sliceMap.put(c, slices);
             }
         }
+
+        System.out.println("Mapping of coord / possible slices");
     }
 
     public void slice() {
@@ -110,26 +104,30 @@ public class Pizza {
             // Sort the result
             possibleCells.sort(null);
             // Use slice with the least amount of possibilities.
-            
+
             firstNotZero = 0;
-            
-            while(firstNotZero < possibleCells.size() && possibleCells.get(firstNotZero).getPossibilities() == 0)
-            {
+
+            while (firstNotZero < possibleCells.size() && possibleCells.get(firstNotZero).getPossibilities() == 0) {
                 firstNotZero++;
             }
-            
-            // possible bug if all zeros. // FIXME
-            if(firstNotZero == possibleCells.size())
+
+            // possible bug if all zeros.
+            if (firstNotZero == possibleCells.size()) {
                 break;
-            
+            }
+
             possibleCells = possibleCells.subList(firstNotZero, possibleCells.size());
 
             Cell cell = possibleCells.get(0);
 
-            cell.getSlices().sort(null); 
+            cell.getSlices().sort(null);
 
             int i = 0;
             Slice sl = cell.getSlices().get(i);
+            while(!sl.isValid()) {
+                i++;
+                sl = cell.getSlices().get(i);
+            }
 
             solution.add(sl); //TODO Sort the slices a cell on size. 
             System.out.println(solution.size());
@@ -150,19 +148,8 @@ public class Pizza {
 
         possibleCells = new ArrayList<>();
 
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                cells[i][j].reset();
-            }
-        }
-
-        for (Coordinate coord : coordinates) {
-            for (Slice sl : sliceMap.get(coord)) {
-
-                if (solution.contains(sl)) {
-                    continue;
-                }
-
+        for ( List<Slice> slices : sliceMap.values()) {
+            for(Slice sl: slices) { 
                 for (Cell cell : sl.getCells()) {
                     cell.incrementPossibility();
                     cell.getSlices().add(sl);
@@ -216,8 +203,11 @@ public class Pizza {
         // decrement possibilities in neighbouring cells. 
         for (Cell cl : slice.getCells()) {
             for (Slice sl : cl.getSlices()) {
-                for (Cell c : sl.getCells()) {
-                    c.decrementPossibility();
+                if(sl.isValid()) {
+                    for (Cell c : sl.getCells()) {
+                        c.decrementPossibility();
+                    }
+                    sl.setValid(false);
                 }
             }
         }

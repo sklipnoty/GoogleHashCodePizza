@@ -20,7 +20,7 @@ public class Shape {
 
     @Override
     public String toString() {
-        return "Shape{" + "coords=" + coords + '}';
+        return "Shape{" + "coords=" + coords[0].toString() + " - "  + coords[1].toString() + '}';
     }
 
     

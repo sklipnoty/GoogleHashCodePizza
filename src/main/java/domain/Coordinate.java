@@ -37,12 +37,8 @@ public class Coordinate {
 
     @Override
     public int hashCode() {
-        int hash = 5381;
-
-        hash = ((hash << 5) + hash) + x;
-        hash = ((hash << 5) + hash) + y;
-
-        return hash;
+        // http://stackoverflow.com/questions/11742593/what-is-the-hashcode-for-a-custom-class-having-just-two-int-properties
+        return x * 31 + y;
     }
 
     @Override

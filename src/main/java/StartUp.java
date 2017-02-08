@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class StartUp {
 
-    private static String FILENAME = "resources/medium.in";
+    private static String FILENAME = "resources/big.in";
 
     public static void main(String args[]) {
         System.out.println("Starting the pizza slicer!");

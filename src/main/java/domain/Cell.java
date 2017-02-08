@@ -52,7 +52,7 @@ public class Cell implements Comparable<Cell>{
 
     @Override
     public String toString() {
-        return possibilities + " ";
+        return coordinate.toString();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class Cell implements Comparable<Cell>{
     
     public void reset() {
         possibilities = 0;
-        slices = new ArrayList<>();
+        slices.clear();
     }
 
     public void decrementPossibility() {
