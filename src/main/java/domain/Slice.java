@@ -3,19 +3,23 @@ package domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-public class Slice implements Comparable<Slice>{
+public class Slice implements Comparable<Slice> {
 
     // Zero based start (0th element) and end (1th element) coordinates of the slice
     private Coordinate[] coords = new Coordinate[2];
     private List<Cell> cells = new ArrayList<>();
     private int numberOfMushrooms = 0, numberOfTomatoes = 0;
 
-    public Slice(Coordinate coords1, Coordinate coords2, PizzaIngredient[][] pizzaIng) {
+    public Slice(Coordinate coords1, Coordinate coords2, PizzaIngredient[][] pizzaIng, Cell[][] cells) {
         setCoords(coords1, coords2);
 
         for (int i = this.coords[0].getX(); i <= this.coords[1].getX(); i++) {
             for (int j = this.coords[0].getY(); j <= this.coords[1].getY(); j++) {
+                
+                this.cells.add(cells[i][j]);
+
                 if (pizzaIng[i][j] == PizzaIngredient.M) {
                     numberOfMushrooms++;
                 } else {
@@ -36,14 +40,6 @@ public class Slice implements Comparable<Slice>{
     public void setCoords(Coordinate coords1, Coordinate coords2) {
         this.coords[0] = coords1;
         this.coords[1] = coords2;
-
-        for (int i = coords[0].getX(); i <= coords[1].getX(); i++) {
-            for (int j = coords[0].getY(); j <= coords[1].getY(); j++) {
-                Cell c = new Cell();
-                c.setCoordinate(new Coordinate(i, j));
-                cells.add(c);
-            }
-        }
     }
 
     public List<Cell> getCells() {
@@ -60,7 +56,7 @@ public class Slice implements Comparable<Slice>{
 
     @Override
     public String toString() {
-        return "Slice" + coords + " ";
+        return "Slice" + Arrays.deepToString(coords) + " ";
     }
 
     @Override
@@ -99,7 +95,4 @@ public class Slice implements Comparable<Slice>{
     public int compareTo(Slice o) {
         return Integer.compare(this.cells.size(), o.cells.size());
     }
-    
-    
-
 }

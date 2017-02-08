@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Cell implements Comparable<Cell>{
     private List<Slice> slices = new ArrayList<>();
     private Coordinate coordinate;
-    private int possibilities;
+    private int possibilities = 0;
 
     public Cell() {
     }
@@ -57,8 +57,7 @@ public class Cell implements Comparable<Cell>{
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        return hash;
+        return coordinate.hashCode();
     }
 
     @Override
@@ -77,5 +76,12 @@ public class Cell implements Comparable<Cell>{
     }
     
     
+    public void incrementPossibility() {
+        this.possibilities++;
+    }
     
+    public void reset() {
+        possibilities = 0;
+        slices = new ArrayList<>();
+    }
 }

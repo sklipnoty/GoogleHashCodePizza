@@ -4,14 +4,8 @@ import domain.shape.Shape;
 import domain.shape.Shaper;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Google hashcode example
@@ -30,8 +24,9 @@ public class Pizza {
 
     private HashMap<Coordinate, List<Shape>> shapeMap;
     private HashMap<Coordinate, List<Slice>> sliceMap = new HashMap<>();
-    private final ArrayList<Cell> possibleSlices;
-    private final ArrayList<Coordinate> coordinates;
+    private ArrayList<Coordinate> coordinates;
+
+    private Cell[][] cells;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;
@@ -39,19 +34,18 @@ public class Pizza {
         this.rows = rows;
         this.maxCells = maxCells;
         this.minIng = minIng;
+        this.cells = new Cell[cols][rows];
 
         //Presetup 
         System.out.println("Pre-Setup Pizza");
-        
+
         //Make a shaper with default shapes.
         this.shaper = new Shaper(maxCells);
         //Calculate all possible variations
         shapeMap = new HashMap<>();
-        possibleSlices = new ArrayList<>();
         coordinates = new ArrayList<>();
-        
+
         makeMapping();
-        removeInvalidSlice();
 
         System.out.println("Pre-Setup Done");
     }
@@ -60,6 +54,10 @@ public class Pizza {
         // Keep a mapping of coordinate , possible shapes.
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
+
+                Cell cell = new Cell();
+                cells[i][j] = cell;
+                
                 shapeMap.put(new Coordinate(i, j), shaper.getPossibleShapes(i, j, cols, rows));
             }
         }
@@ -69,50 +67,24 @@ public class Pizza {
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
-                Cell cell = new Cell();
+
                 Coordinate c = new Coordinate(i, j);
                 coordinates.add(c);
-                cell.setCoordinate(c);
-                possibleSlices.add(cell);
+                cells[i][j].setCoordinate(c);
 
-                List<Shape> shapes = shapeMap.get(new Coordinate(i, j));
+                List<Shape> shapes = shapeMap.get(c);
                 List<Slice> slices = new ArrayList<>();
 
                 for (Shape shape : shapes) {
-                    Slice sl = new Slice(shape.coords[0], shape.coords[1], this.pizzaIng);
-                    slices.add(sl);
+                    Slice sl = new Slice(shape.coords[0], shape.coords[1], this.pizzaIng, cells);
+
+                    if (sl.isValid(minIng, maxCells)) {
+                        slices.add(sl);
+                    }
                 }
 
                 sliceMap.put(c, slices);
             }
-        }
-    }
-
-    private void removeInvalidSlice() {
-        System.out.println("Fiding not valid slices and remove them");
-        // check if slice are potential valid
-        Map<Coordinate, List<Slice>> badSlices = new HashMap<>();
-
-        for (Coordinate coord : coordinates) {
-            for (Slice slice : sliceMap.get(coord)) {
-                {
-                    if (!slice.isValid(minIng, maxCells)) {
-
-                        if (badSlices.get(coord) == null) {
-                            badSlices.put(coord, new ArrayList<Slice>());
-                        }
-
-                        badSlices.get(coord).add(slice);
-                    }
-                }
-            }
-        }
-        
-        System.out.println("Bad slices : ");
-        System.out.println(badSlices.toString());
-
-        for (Coordinate coord : badSlices.keySet()) {
-           sliceMap.get(coord).removeAll(badSlices.get(coord));
         }
     }
 
@@ -139,7 +111,11 @@ public class Pizza {
                 break;
             }
 
-            solution.add(cell.getSlices().get(0)); //TODO Sort the slices a cell on size. 
+            cell.getSlices().sort(null);
+            solution.add(cell.getSlices().get(cell.getSlices().size()-1)); //TODO Sort the slices a cell on size. 
+            
+            System.out.println(solution.size());
+            
             cells = getPossibleSlices();
         }
 
@@ -155,14 +131,13 @@ public class Pizza {
 
     private List<Cell> getPossibleSlices() {
 
-        System.out.println("Possible Slices");
+        ArrayList<Cell> possibleSlices = new ArrayList<>();
 
-        for (Cell cl : possibleSlices) {
-            cl.setPossibilities(0);
-            cl.setSlices(new ArrayList<Slice>());
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                cells[i][j].reset();
+            }
         }
-
-        System.out.println("List of possible slices setup");
 
         for (Coordinate coord : coordinates) {
             for (Slice sl : sliceMap.get(coord)) {
@@ -172,15 +147,18 @@ public class Pizza {
                 }
 
                 for (Cell cell : sl.getCells()) {
-                    int index = possibleSlices.indexOf(cell);
-                    possibleSlices.get(index).getSlices().add(sl);
-                    possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
+                    cell.incrementPossibility();
+                    cell.getSlices().add(sl);
                 }
             }
         }
 
-        System.out.println(possibleSlices.toString());
-
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                possibleSlices.add(cells[i][j]);
+            }
+        }
+        
         return possibleSlices;
     }
 
