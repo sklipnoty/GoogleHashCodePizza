@@ -27,10 +27,11 @@ public class Pizza {
     private int minIng;
     private ArrayList<Slice> solution;
     private final Shaper shaper;
+
     private HashMap<Coordinate, List<Shape>> shapeMap;
     private HashMap<Coordinate, List<Slice>> sliceMap = new HashMap<>();
-
     private final ArrayList<Cell> possibleSlices;
+    private final ArrayList<Coordinate> coordinates;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;
@@ -48,33 +49,57 @@ public class Pizza {
 
         // Keep a mapping of coordinate , possible shapes.
         for (int i = 0; i < cols; i++) {
-            System.out.print("\r" + i + "/" + cols + " \b");
             for (int j = 0; j < rows; j++) {
                 shapeMap.put(new Coordinate(i, j), shaper.getPossibleShapes(i, j, cols, rows));
             }
         }
 
+        System.out.println("Mapping of coord / possible slices");
         //Keep a mapping of coordinate , possible slices. (this should replace the above mapping)
         possibleSlices = new ArrayList<>();
+        coordinates = new ArrayList<>();
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 Cell cell = new Cell();
-                cell.setCoordinate(new Coordinate(i, j));
+                Coordinate c = new Coordinate(i, j);
+                coordinates.add(c);
+                cell.setCoordinate(c);
                 possibleSlices.add(cell);
 
                 List<Shape> shapes = shapeMap.get(new Coordinate(i, j));
                 List<Slice> slices = new ArrayList<>();
 
                 for (Shape shape : shapes) {
-                    Slice sl = new Slice();
-                    sl.coords[0] = shape.coords[0];
-                    sl.coords[1] = shape.coords[1];
+                    Slice sl = new Slice(shape.coords[0], shape.coords[1], this.pizzaIng);
                     slices.add(sl);
                 }
 
-                sliceMap.put(new Coordinate(i, j), slices);
+                sliceMap.put(c, slices);
             }
+        }
+
+        System.out.println("Fiding not valid slices and remove them");
+        // check if slice are potential valid
+        Map<Coordinate, List<Slice>> badSlices = new HashMap<>();
+
+        for (Coordinate coord : coordinates) {
+            for (Slice slice : sliceMap.get(coord)) {
+                {
+                    if (!slice.isValid(minIng, maxCells)) {
+
+                        if (badSlices.get(coord) == null) {
+                            badSlices.put(coord, new ArrayList<Slice>());
+                        }
+
+                        badSlices.get(coord).add(slice);
+                    }
+                }
+            }
+        }
+
+        for (Coordinate coord : badSlices.keySet()) {
+            sliceMap.get(coord).removeAll(badSlices.get(coord));
         }
 
         System.out.println("Pre-Setup Done");
@@ -120,68 +145,42 @@ public class Pizza {
     private List<Cell> getPossibleSlices() {
 
         System.out.println("Possible Slices");
-        
-        for(Cell cl : possibleSlices ) {
+
+        for (Cell cl : possibleSlices) {
             cl.setPossibilities(0);
             cl.setSlices(new ArrayList<Slice>());
         }
 
         System.out.println("List of possible slices setup");
 
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                for (Slice sl : sliceMap.get(new Coordinate(i, j))) {
+        for (Coordinate coord : coordinates) {
+            for (Slice sl : sliceMap.get(coord)) {
 
-                    if (solution.contains(sl)) {
-                        continue;
-                    }
+                if (solution.contains(sl)) {
+                    continue;
+                }
 
-                    int numTomatoes = 0;
-                    int numMushrooms = 0;
-
-                    List<Cell> cells = new ArrayList<>();
-
-                    for (int si = sl.coords[0].getX(); si <= sl.coords[1].getX(); si++) {
-                        for (int sj = sl.coords[0].getY(); sj <= sl.coords[1].getY(); sj++) {
-
-                            if (pizzaIng[si][sj] == PizzaIngredient.M) {
-                                numMushrooms++;
-                            } else {
-                                numTomatoes++;
-                            }
-                            
-                            Cell c = new Cell();
-                            c.setCoordinate(new Coordinate(si, sj));
-                            cells.add(c);
-                        }
-                    }
-
-                //    System.out.println(numTomatoes + " " + numMushrooms);
-                    if ((numTomatoes >= minIng && numMushrooms >= minIng && sl.size() <= maxCells)) {
-                        for (Cell cell : cells) {
-                            int index = possibleSlices.indexOf(cell);
-                            possibleSlices.get(index).getSlices().add(sl);
-                            possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
-                        }
-                    }
-
+                for (Cell cell : sl.getCells()) {
+                    int index = possibleSlices.indexOf(cell);
+                    possibleSlices.get(index).getSlices().add(sl);
+                    possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
                 }
             }
         }
-        
+
         System.out.println(possibleSlices.toString());
 
         return possibleSlices;
     }
 
     private void makeOutput(ArrayList<Slice> solution) {
-        System.out.println("OUTPUT FILE :::::");
+        System.out.println("OUTPUT FILE");
 
         System.out.println(solution.size());
 
         for (Slice slice : solution) {
-            System.out.print(slice.coords[0].getY() + " " + slice.coords[0].getX());
-            System.out.print(" " + slice.coords[1].getY() + " " + slice.coords[1].getX());
+            System.out.print(slice.getCoords()[0].getY() + " " + slice.getCoords()[0].getX());
+            System.out.print(" " + slice.getCoords()[1].getY() + " " + slice.getCoords()[1].getX());
             System.out.println("");
         }
     }
