@@ -42,11 +42,21 @@ public class Pizza {
 
         //Presetup 
         System.out.println("Pre-Setup Pizza");
+        
         //Make a shaper with default shapes.
         this.shaper = new Shaper(maxCells);
         //Calculate all possible variations
         shapeMap = new HashMap<>();
+        possibleSlices = new ArrayList<>();
+        coordinates = new ArrayList<>();
+        
+        makeMapping();
+        removeInvalidSlice();
 
+        System.out.println("Pre-Setup Done");
+    }
+
+    private void makeMapping() {
         // Keep a mapping of coordinate , possible shapes.
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
@@ -56,8 +66,6 @@ public class Pizza {
 
         System.out.println("Mapping of coord / possible slices");
         //Keep a mapping of coordinate , possible slices. (this should replace the above mapping)
-        possibleSlices = new ArrayList<>();
-        coordinates = new ArrayList<>();
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
@@ -78,7 +86,9 @@ public class Pizza {
                 sliceMap.put(c, slices);
             }
         }
+    }
 
+    private void removeInvalidSlice() {
         System.out.println("Fiding not valid slices and remove them");
         // check if slice are potential valid
         Map<Coordinate, List<Slice>> badSlices = new HashMap<>();
@@ -97,12 +107,13 @@ public class Pizza {
                 }
             }
         }
+        
+        System.out.println("Bad slices : ");
+        System.out.println(badSlices.toString());
 
         for (Coordinate coord : badSlices.keySet()) {
-            sliceMap.get(coord).removeAll(badSlices.get(coord));
+           sliceMap.get(coord).removeAll(badSlices.get(coord));
         }
-
-        System.out.println("Pre-Setup Done");
     }
 
     public void slice() {

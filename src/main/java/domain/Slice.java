@@ -60,7 +60,7 @@ public class Slice implements Comparable<Slice>{
 
     @Override
     public String toString() {
-        return "Slice{" + "coords=" + coords + '}';
+        return "Slice" + coords + " ";
     }
 
     @Override
