@@ -28,6 +28,9 @@ public class Pizza {
     private ArrayList<Slice> solution;
     private final Shaper shaper;
     private HashMap<Coordinate, List<Shape>> shapeMap;
+    private HashMap<Coordinate, List<Slice>> sliceMap = new HashMap<>();
+
+    private final ArrayList<Cell> possibleSlices;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;
@@ -43,10 +46,34 @@ public class Pizza {
         //Calculate all possible variations
         shapeMap = new HashMap<>();
 
+        // Keep a mapping of coordinate , possible shapes.
         for (int i = 0; i < cols; i++) {
-            System.out.print("\r" + i +"/" + cols  +" \b" );
+            System.out.print("\r" + i + "/" + cols + " \b");
             for (int j = 0; j < rows; j++) {
                 shapeMap.put(new Coordinate(i, j), shaper.getPossibleShapes(i, j, cols, rows));
+            }
+        }
+
+        //Keep a mapping of coordinate , possible slices. (this should replace the above mapping)
+        possibleSlices = new ArrayList<>();
+
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                Cell cell = new Cell();
+                cell.setCoordinate(new Coordinate(i, j));
+                possibleSlices.add(cell);
+
+                List<Shape> shapes = shapeMap.get(new Coordinate(i, j));
+                List<Slice> slices = new ArrayList<>();
+
+                for (Shape shape : shapes) {
+                    Slice sl = new Slice();
+                    sl.coords[0] = shape.coords[0];
+                    sl.coords[1] = shape.coords[1];
+                    slices.add(sl);
+                }
+
+                sliceMap.put(new Coordinate(i, j), slices);
             }
         }
 
@@ -59,7 +86,7 @@ public class Pizza {
         // First make possibility matrix
         List<Cell> cells = getPossibleSlices();
 
-      //  System.out.println(cells.toString());
+        //  System.out.println(cells.toString());
         while (cells.size() > 0) {
             // Sort the result
             cells.sort(null);
@@ -80,32 +107,9 @@ public class Pizza {
             cells = getPossibleSlices();
         }
 
-    //    System.out.println(solution.toString());
+        //    System.out.println(solution.toString());
         makeOutput(solution);
 
-    }
-
-    public boolean isValidSlice(Slice slice) {
-        int numTomatoes = 0;
-        int numMushrooms = 0;
-
-        if (solution.contains(slice)) {
-            return false;
-        }
-
-        // Loop over slice parts
-        // Hier sneller uitgaan namelijk wanneer minIng bereikt is.
-        for (int i = slice.coords[0].getX(); i <= slice.coords[1].getX(); i++) {
-            for (int j = slice.coords[0].getY(); j <= slice.coords[1].getY(); j++) {
-                if (pizzaIng[i][j] == PizzaIngredient.M) {
-                    numMushrooms++;
-                } else {
-                    numTomatoes++;
-                }
-            }
-        }
-
-        return (numTomatoes >= minIng && numMushrooms >= minIng && slice.size() <= maxCells);
     }
 
     @Override
@@ -114,45 +118,58 @@ public class Pizza {
     }
 
     private List<Cell> getPossibleSlices() {
-        
+
         System.out.println("Possible Slices");
         
-        ArrayList<Cell> possibleSlices = new ArrayList<>();
-
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                Cell cell = new Cell();
-                cell.setCoordinate(new Coordinate(i, j));
-                possibleSlices.add(cell);
-            }
+        for(Cell cl : possibleSlices ) {
+            cl.setPossibilities(0);
+            cl.setSlices(new ArrayList<Slice>());
         }
-        
+
         System.out.println("List of possible slices setup");
 
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
+                for (Slice sl : sliceMap.get(new Coordinate(i, j))) {
 
-                List<Shape> shapes = shapeMap.get(new Coordinate(i, j));
+                    if (solution.contains(sl)) {
+                        continue;
+                    }
 
-                for (Shape shape : shapes) {
-                    Slice sl = new Slice();
-                    sl.coords[0] = shape.coords[0];
-                    sl.coords[1] = shape.coords[1];
+                    int numTomatoes = 0;
+                    int numMushrooms = 0;
 
-                    if (isValidSlice(sl)) {
-                        for (int si = sl.coords[0].getX(); si <= sl.coords[1].getX(); si++) {
-                            for (int sj = sl.coords[0].getY(); sj <= sl.coords[1].getY(); sj++) {
-                                Cell newCell = new Cell();
-                                newCell.setCoordinate(new Coordinate(si, sj));
-                                int index = possibleSlices.indexOf(newCell);
-                                possibleSlices.get(index).getSlices().add(sl);
-                                possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
+                    List<Cell> cells = new ArrayList<>();
+
+                    for (int si = sl.coords[0].getX(); si <= sl.coords[1].getX(); si++) {
+                        for (int sj = sl.coords[0].getY(); sj <= sl.coords[1].getY(); sj++) {
+
+                            if (pizzaIng[si][sj] == PizzaIngredient.M) {
+                                numMushrooms++;
+                            } else {
+                                numTomatoes++;
                             }
+                            
+                            Cell c = new Cell();
+                            c.setCoordinate(new Coordinate(si, sj));
+                            cells.add(c);
                         }
                     }
+
+                //    System.out.println(numTomatoes + " " + numMushrooms);
+                    if ((numTomatoes >= minIng && numMushrooms >= minIng && sl.size() <= maxCells)) {
+                        for (Cell cell : cells) {
+                            int index = possibleSlices.indexOf(cell);
+                            possibleSlices.get(index).getSlices().add(sl);
+                            possibleSlices.get(index).setPossibilities(possibleSlices.get(index).getPossibilities() + 1);
+                        }
+                    }
+
                 }
             }
         }
+        
+        System.out.println(possibleSlices.toString());
 
         return possibleSlices;
     }
