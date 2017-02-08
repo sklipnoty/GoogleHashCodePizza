@@ -28,7 +28,6 @@ public class Pizza {
     private ArrayList<Slice> solution;
     private final Shaper shaper;
     private HashMap<Coordinate, List<Shape>> shapeMap;
-    private ArrayList<Cell> possibleSlices;
 
     public Pizza(PizzaIngredient[][] pizzaIng, int cols, int rows, int maxCells, int minIng) {
         this.pizzaIng = pizzaIng;

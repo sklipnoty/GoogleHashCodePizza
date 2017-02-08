@@ -37,7 +37,11 @@ public class Coordinate {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 5381;
+
+        hash = ((hash << 5) + hash) + x;
+        hash = ((hash << 5) + hash) + y;
+
         return hash;
     }
 
@@ -58,10 +62,5 @@ public class Coordinate {
         }
         return true;
     }
-
-
-    
-    
-    
 
 }
