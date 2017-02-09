@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,29 +97,27 @@ public class Pizza {
 
         // First make possibility matrix
         getPossibleSlices();
-
+        Cell cell;
+        // first place all zero possibilities to the left side
+        firstNotZero = 0;
+        if(possibleCells.size() > 0) {
+            do {
+                cell = Collections.min(possibleCells.subList(firstNotZero, possibleCells.size()));
+                if(cell.getPossibilities() == 0) {
+                    this.swapToFront(cell);
+                }
+            }while(cell.getPossibilities() == 0);
+        }
+        
         //  System.out.println(cells.toString());
         while (possibleCells.size() > 0) {
-
-            //    System.out.println(cells.toString());
-            // Sort the result
-            possibleCells.sort(null);
-            // Use slice with the least amount of possibilities.
-
-            firstNotZero = 0;
-
-            while (firstNotZero < possibleCells.size() && possibleCells.get(firstNotZero).getPossibilities() == 0) {
-                firstNotZero++;
-            }
-
             // possible bug if all zeros.
             if (firstNotZero == possibleCells.size()) {
                 break;
             }
 
-            possibleCells = possibleCells.subList(firstNotZero, possibleCells.size());
+            cell = Collections.min(possibleCells.subList(firstNotZero, possibleCells.size()));
 
-            Cell cell = possibleCells.get(0);
 
             cell.getSlices().sort(null);
 
@@ -130,7 +129,7 @@ public class Pizza {
             }
 
             solution.add(sl); //TODO Sort the slices a cell on size. 
-            System.out.println(solution.size());
+            //System.out.println(solution.size());
             adjustPossibleSlices(sl);
         }
 
@@ -157,7 +156,7 @@ public class Pizza {
             }
         }
 
-        for (int i = 0; i < cols; i++) {
+        for (int i = 0; i < cols; i++) { 
             for (int j = 0; j < rows; j++) {
                 possibleCells.add(cells[i][j]);
             }
@@ -198,14 +197,18 @@ public class Pizza {
 
     private void adjustPossibleSlices(Slice slice) {
         // Possible Cells
-        possibleCells.removeAll(slice.getCells());
+        //possibleCells.removeAll(slice.getCells());
 
         // decrement possibilities in neighbouring cells. 
         for (Cell cl : slice.getCells()) {
+            swapToFront(cl);
             for (Slice sl : cl.getSlices()) {
                 if(sl.isValid()) {
                     for (Cell c : sl.getCells()) {
                         c.decrementPossibility();
+                        if(c.getPossibilities() == 0) {
+                            swapToFront(c);
+                        }
                     }
                     sl.setValid(false);
                 }
@@ -213,5 +216,14 @@ public class Pizza {
         }
 
         // remove all slices that have common cells
+    }
+
+    private void swapToFront(Cell cl) {
+        int firstIndex = possibleCells.subList(firstNotZero, possibleCells.size()).indexOf(cl);
+        if(firstIndex != -1) {
+            firstIndex += firstNotZero;
+            Collections.swap(possibleCells,  firstIndex , firstNotZero);
+            firstNotZero++;
+        }
     }
 }
