@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +36,7 @@ public class Pizza {
     private HashMap<Coordinate, List<Slice>> sliceMap = new HashMap<>();
 
     private Cell[][] cells;
-    private List<Cell> possibleCells;
+    private PossibilityList<Cell> possibleCells;
 
     private int firstNotZero = 0;
 
@@ -91,6 +92,31 @@ public class Pizza {
 
         System.out.println("Mapping of coord / possible slices");
     }
+    
+        private void getPossibleSlices() {
+
+        possibleCells = new PossibilityList<>(new Function<List<Cell>, Cell>(){
+            @Override
+            public Cell apply(List<Cell> t) {
+                return Collections.min(t);
+            }
+        });
+
+        for ( List<Slice> slices : sliceMap.values()) {
+            for(Slice sl: slices) { 
+                for (Cell cell : sl.getCells()) {
+                    cell.incrementPossibility();
+                    cell.getSlices().add(sl);
+                }
+            }
+        }
+
+        for (int i = 0; i < cols; i++) { 
+            for (int j = 0; j < rows; j++) {
+                possibleCells.add(cells[i][j]);
+            }
+        }
+    }
 
     public void slice() {
         solution = new ArrayList<>();
@@ -98,28 +124,13 @@ public class Pizza {
         // First make possibility matrix
         getPossibleSlices();
         Cell cell;
-        // first place all zero possibilities to the left side
-        firstNotZero = 0;
-        if(possibleCells.size() > 0) {
-            do {
-                cell = Collections.min(possibleCells.subList(firstNotZero, possibleCells.size()));
-                if(cell.getPossibilities() == 0) {
-                    this.swapToFront(cell);
-                }
-            }while(cell.getPossibilities() == 0);
-        }
         
         //  System.out.println(cells.toString());
-        while (possibleCells.size() > 0) {
-            // possible bug if all zeros.
-            if (firstNotZero == possibleCells.size()) {
-                break;
-            }
+        while (possibleCells.hasPossibilities()) {
 
-            cell = Collections.min(possibleCells.subList(firstNotZero, possibleCells.size()));
-
-
-            cell.getSlices().sort(null);
+            cell = possibleCells.getElement();
+            
+             cell.getSlices().sort(null);
 
             int i = 0;
             Slice sl = cell.getSlices().get(i);
@@ -141,26 +152,6 @@ public class Pizza {
     @Override
     public String toString() {
         return "Pizza{" + "cols=" + cols + ", rows=" + rows + ", maxCells=" + maxCells + ", minIng=" + minIng + " \n" + Arrays.deepToString(pizzaIng) + '}';
-    }
-
-    private void getPossibleSlices() {
-
-        possibleCells = new ArrayList<>();
-
-        for ( List<Slice> slices : sliceMap.values()) {
-            for(Slice sl: slices) { 
-                for (Cell cell : sl.getCells()) {
-                    cell.incrementPossibility();
-                    cell.getSlices().add(sl);
-                }
-            }
-        }
-
-        for (int i = 0; i < cols; i++) { 
-            for (int j = 0; j < rows; j++) {
-                possibleCells.add(cells[i][j]);
-            }
-        }
     }
 
     private void makeOutput(ArrayList<Slice> solution) {
@@ -196,34 +187,20 @@ public class Pizza {
     }
 
     private void adjustPossibleSlices(Slice slice) {
-        // Possible Cells
-        //possibleCells.removeAll(slice.getCells());
-
         // decrement possibilities in neighbouring cells. 
         for (Cell cl : slice.getCells()) {
-            swapToFront(cl);
+            possibleCells.removeElement(cl);
             for (Slice sl : cl.getSlices()) {
                 if(sl.isValid()) {
                     for (Cell c : sl.getCells()) {
                         c.decrementPossibility();
-                        if(c.getPossibilities() == 0) {
-                            swapToFront(c);
+                        if(!c.isValid()) {
+                            possibleCells.removeElement(c);
                         }
                     }
                     sl.setValid(false);
                 }
             }
-        }
-
-        // remove all slices that have common cells
-    }
-
-    private void swapToFront(Cell cl) {
-        int firstIndex = possibleCells.subList(firstNotZero, possibleCells.size()).indexOf(cl);
-        if(firstIndex != -1) {
-            firstIndex += firstNotZero;
-            Collections.swap(possibleCells,  firstIndex , firstNotZero);
-            firstNotZero++;
         }
     }
 }

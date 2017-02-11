@@ -13,7 +13,7 @@ import java.util.Objects;
  *
  * @author Sklipnoty
  */
-public class Cell implements Comparable<Cell>{
+public class Cell extends Possibility implements Comparable<Cell>{
     private List<Slice> slices = new ArrayList<>();
     private Coordinate coordinate;
     private int possibilities = 0;
@@ -88,5 +88,10 @@ public class Cell implements Comparable<Cell>{
     public void decrementPossibility() {
         if(possibilities > 0)
             possibilities--;
+    }
+
+    @Override
+    public boolean isValid() {
+        return this.getPossibilities() > 0;
     }
 }
