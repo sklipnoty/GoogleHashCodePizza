@@ -61,20 +61,3 @@ public class Shaper {
     }
 
 }
-
-/*
- // Vierkantjes
- int square = (int) Math.sqrt(n);
-
- for (int i = 0; i < square; i++) {
- for (int j = 0; j < square; j++) {
- System.out.println(i + " " + j);
- }
- }
-
- // Rechthoeken
- for (int i = 0; i < n; i++) {
- System.out.println(i + " " + 0);
- System.out.println(0 + " " + i);
- }
- */

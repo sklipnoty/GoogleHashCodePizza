@@ -1,10 +1,6 @@
 
 import domain.Pizza;
-import domain.shape.Shape;
-import domain.shape.Shaper;
 import io.PizzaFileReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Google hashcode example

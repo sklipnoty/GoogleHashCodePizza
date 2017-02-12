@@ -3,7 +3,6 @@ package domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class Slice implements Comparable<Slice> {
 
@@ -13,19 +12,47 @@ public class Slice implements Comparable<Slice> {
     private int numberOfMushrooms = 0, numberOfTomatoes = 0;
     private boolean valid = true;
 
-    public Slice(Coordinate coords1, Coordinate coords2, PizzaIngredient[][] pizzaIng, Cell[][] cells) {
+    public Slice(Coordinate coords1, Coordinate coords2, PizzaIngredient[][] pizzaIng, Cell[][] cells, int[][] tomatoCount) {
         setCoords(coords1, coords2);
 
+        int sliceArea = (this.coords[1].getX() - this.coords[0].getX() + 1)
+                      * (this.coords[1].getY() - this.coords[0].getY() + 1);
+        
+        numberOfTomatoes = tomatoCount[this.coords[1].getX()][this.coords[1].getY()];
+        
+        // Corrective calculation step
+        // Can probably be written in a more succinct way
+        if (this.coords[0].getX() != 0 && this.coords[0].getY() != 0) {
+            // [0].getX() != 0 && [0].getY() != 0
+            numberOfTomatoes += tomatoCount[this.coords[0].getX() - 1][this.coords[0].getY() - 1];
+            numberOfTomatoes -= tomatoCount[this.coords[1].getX()][this.coords[0].getY() - 1];
+            numberOfTomatoes -= tomatoCount[this.coords[0].getX() - 1][this.coords[1].getY()];
+        }
+        else if (this.coords[0].getX() != 0) {
+            // [0].getX() != 0 && [0].getY() == 0
+            numberOfTomatoes -= tomatoCount[this.coords[0].getX() - 1][this.coords[1].getY()];
+        }
+        else if (this.coords[0].getY() != 0) {
+            // [0].getX() == 0 && [0].getY() != 0
+            numberOfTomatoes -= tomatoCount[this.coords[1].getX()][this.coords[0].getY() - 1];
+        }
+        else {
+            // [0].getX() == 0 && [0].getY() == 0
+            // no corrective calculation required.
+        }
+        
+        numberOfMushrooms = sliceArea - numberOfTomatoes;
+        
         for (int i = this.coords[0].getX(); i <= this.coords[1].getX(); i++) {
             for (int j = this.coords[0].getY(); j <= this.coords[1].getY(); j++) {
 
                 this.cells.add(cells[i][j]);
 
-                if (pizzaIng[i][j] == PizzaIngredient.M) {
-                    numberOfMushrooms++;
-                } else {
-                    numberOfTomatoes++;
-                }
+//                if (pizzaIng[i][j] == PizzaIngredient.M) {
+//                    numberOfMushrooms++;
+//                } else {
+//                    numberOfTomatoes++;
+//                }
             }
         }
     }
@@ -38,7 +65,7 @@ public class Slice implements Comparable<Slice> {
         return coords;
     }
 
-    public void setCoords(Coordinate coords1, Coordinate coords2) {
+    private void setCoords(Coordinate coords1, Coordinate coords2) {
         this.coords[0] = coords1;
         this.coords[1] = coords2;
     }
@@ -46,15 +73,7 @@ public class Slice implements Comparable<Slice> {
     public List<Cell> getCells() {
         return cells;
     }
-
-    public void setCells(List<Cell> cells) {
-        this.cells = cells;
-    }
-
-    public int size() {
-        return cells.size();
-    }
-
+    
     public boolean isValid() {
         return valid;
     }

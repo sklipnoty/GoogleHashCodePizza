@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package domain;
 
 import java.util.ArrayList;
@@ -33,16 +28,12 @@ public class Cell extends Possibility implements Comparable<Cell>{
         return slices;
     }
 
+    public void addSlice(Slice slice) {
+        slices.add(slice);
+    }
+    
     public void setSlices(List<Slice> slices) {
         this.slices = slices;
-    }
-
-    public Coordinate getCoordinate() {
-        return coordinate;
-    }
-
-    public void setCoordinate(Coordinate coordinate) {
-        this.coordinate = coordinate;
     }
 
     @Override
