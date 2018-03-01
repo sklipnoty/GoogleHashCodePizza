@@ -17,7 +17,7 @@ public class StartUp
 //        SimulatedAnnealing solver = new SimulatedAnnealing(pizza);
 //        solver.anneal();
 
-        RandomSampling solver = new RandomSampling(pizza, 300);
+        RandomSampling solver = new RandomSampling(pizza, 2);
         solver.sample();
         
         System.out.printf("Solution (score = %d):\n", solver.getSolution().getScore());

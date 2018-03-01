@@ -31,6 +31,8 @@ public class RandomSampling
             {
                 currentSolution = newSolution;
             }
+            
+            System.out.println("[" + i + "] Best: " +  currentSolution.getScore() + " Current : " + newSolution.getScore());
         }
     }
 }

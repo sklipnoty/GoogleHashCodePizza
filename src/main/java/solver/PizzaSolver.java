@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class PizzaSolver
 {
-    private static final int OVERLAP_ABORT_TRESHOLD = 10000;
+    private static final int OVERLAP_ABORT_TRESHOLD = 1000000;
     private final Pizza pizza;
     private final Shaper shaper;
     private final Random rng;
