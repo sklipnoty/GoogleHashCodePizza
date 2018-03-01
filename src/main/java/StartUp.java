@@ -22,5 +22,7 @@ public class StartUp
         
         System.out.printf("Solution (score = %d):\n", solver.getSolution().getScore());
         System.out.println(solver.getSolution());
+        
+        System.out.println("test");
     }
 }
