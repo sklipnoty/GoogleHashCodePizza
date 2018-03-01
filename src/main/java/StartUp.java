@@ -1,23 +1,26 @@
 
 import domain.Pizza;
-import io.PizzaFileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Scanner;
+import solver.RandomSampling;
 
-/**
- * Google hashcode example
- *
- * @author Sklipnoty
- */
-public class StartUp {
+public class StartUp
+{
+    private static final String PIZZA_FILE = "resources/big.in";
 
-    private static String FILENAME = "resources/big.in";
-
-    public static void main(String args[]) {
-        System.out.println("Starting the pizza slicer!");
-           
-         Pizza pizza = PizzaFileReader.readPizzaFile(FILENAME);
-         System.out.println(pizza);
+    public static void main(String[] args) throws IOException
+    {
+        Scanner pizzaInput = new Scanner(Paths.get(PIZZA_FILE).toAbsolutePath());
+        Pizza pizza = new Pizza(pizzaInput);
         
-         pizza.slice();
-    }
+//        SimulatedAnnealing solver = new SimulatedAnnealing(pizza);
+//        solver.anneal();
 
+        RandomSampling solver = new RandomSampling(pizza, 300);
+        solver.sample();
+        
+        System.out.printf("Solution (score = %d):\n", solver.getSolution().getScore());
+        System.out.println(solver.getSolution());
+    }
 }

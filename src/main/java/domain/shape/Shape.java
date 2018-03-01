@@ -2,21 +2,14 @@ package domain.shape;
 
 import domain.Coordinate;
 
-/**
- *
- * @author Sklipnoty
- */
-public class Shape {
-    public Coordinate[] coords = new Coordinate[2];
+public class Shape
+{
+    public final Coordinate topLeft;
+    public final Coordinate bottomRight;
     
-    public Shape() {
-        
+    public Shape(Coordinate topLeft, Coordinate bottomRight)
+    {
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
     }
-
-    @Override
-    public String toString() {
-        return "Shape{" + "coords=" + coords[0].toString() + " - "  + coords[1].toString() + '}';
-    }
-
-    
 }
